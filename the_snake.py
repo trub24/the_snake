@@ -118,8 +118,8 @@ class Snake(GameObject):
         directions = {
             RIGHT: (head_pos[0] + GRID_SIZE, head_pos[1]),
             LEFT: (head_pos[0] - GRID_SIZE, head_pos[1]),
-            UP: (head_pos[0], head_pos[1] - GRID_SIZE),
-            DOWN: (head_pos[0], head_pos[1] + GRID_SIZE)
+            UP: (head_pos[0], head_pos[1] + GRID_SIZE),
+            DOWN: (head_pos[0], head_pos[1] - GRID_SIZE)
         }
         new_pos = directions[self.direction]
         if new_pos in self.positions:
