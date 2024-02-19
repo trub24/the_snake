@@ -1,8 +1,7 @@
-from random import choice, randint
+from random import choice, randrange
 
 import pygame
 
-# Инициализация PyGame:
 pygame.init()
 
 # Константы для размеров поля и сетки:
@@ -17,19 +16,14 @@ DOWN = (0, 1)
 LEFT = (-1, 0)
 RIGHT = (1, 0)
 
-# Цвет фона - черный:
 BOARD_BACKGROUND_COLOR = (0, 0, 0)
 
-# Цвет границы ячейки
 BORDER_COLOR = (93, 216, 228)
 
-# Цвет яблока
 APPLE_COLOR = (255, 0, 0)
 
-# Цвет змейки
 SNAKE_COLOR = (0, 255, 0)
 
-# Скорость движения змейки:
 SPEED = 20
 
 # Настройка игрового окна:
@@ -59,47 +53,44 @@ def handle_keys(game_object):
                 game_object.next_direction = RIGHT
 
 
-# Тут опишите все классы игры.
 class GameObject:
     """Родительский класс всех объектов игры."""
 
-    def __init__(self):
-        self.position = ((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
-        self.body_color = (0, 0, 0)
+    def __init__(self, position, body_color):
+        self.position = position
+        self.body_color = body_color
 
-    def draw(self):
-        """Заглушка метода рисования объекта."""
-        pass
+    def draw(self, surface, body_color, rect):
+        """Метод родительского класса отрисовывающий 1 клетку"""
+        pygame.draw.rect(surface, body_color, rect)
+        pygame.draw.rect(surface, BORDER_COLOR, rect, 1)
 
 
 class Apple(GameObject):
     """Класс описывающий игровой объект яюлоко."""
 
-    def __init__(self):
-        super().__init__()
-        self.position = self.randomize_position()
-        self.body_color = APPLE_COLOR
+    def __init__(self, position, body_color):
+        super().__init__(position, body_color)
 
     def randomize_position(self):
         """Метод, который создает новую случайную позицию."""
-        position = (randint(0, GRID_WIDTH - 1) * GRID_SIZE,
-                    randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
+        position = (randrange(0, SCREEN_WIDTH, GRID_SIZE),
+                    randrange(0, SCREEN_HEIGHT, GRID_SIZE))
         return position
 
     def draw(self, surface):
-        """Метод, который отрисовывает яблоко."""
+        """Метод отрисовывающий яблоко"""
+        body_color = self.body_color
         rect = pygame.Rect((self.position[0], self.position[1]),
                            (GRID_SIZE, GRID_SIZE))
-        pygame.draw.rect(surface, self.body_color, rect)
-        pygame.draw.rect(surface, BORDER_COLOR, rect, 1)
+        GameObject.draw(Apple, surface, body_color, rect)
 
 
 class Snake(GameObject):
     """Класс описывающий игровой объект змейка."""
 
-    def __init__(self):
-        super().__init__()
-        self.body_color = SNAKE_COLOR
+    def __init__(self, position, body_color):
+        super().__init__(position, body_color)
         self.positions = [((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))]
         self.length = 1
         self.direction = RIGHT
@@ -147,17 +138,16 @@ class Snake(GameObject):
 
     def draw(self, surface):
         """Метод, который отрисовывает змейку."""
+        body_color = self.body_color
         for position in self.positions[:-1]:
             rect = (
                 pygame.Rect((position[0], position[1]), (GRID_SIZE, GRID_SIZE))
             )
-            pygame.draw.rect(surface, self.body_color, rect)
-            pygame.draw.rect(surface, BORDER_COLOR, rect, 1)
+            GameObject.draw(Snake, surface, body_color, rect)
 
         # Отрисовка головы змейки
         head_rect = pygame.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
-        pygame.draw.rect(surface, self.body_color, head_rect)
-        pygame.draw.rect(surface, BORDER_COLOR, head_rect, 1)
+        GameObject.draw(Snake, surface, body_color, head_rect)
 
         # Затирание последнего сегмента
         if self.last:
@@ -181,11 +171,9 @@ class Snake(GameObject):
 
 def main():
     """Функция, в кторой прописана логика игры."""
-    # Тут нужно создать экземпляры классов.
-    apple = Apple()
-    snake = Snake()
+    apple = Apple(Apple.randomize_position(Apple), APPLE_COLOR)
+    snake = Snake(((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2)), SNAKE_COLOR)
 
-    # Тут опишите основную логику игры.
     while True:
         handle_keys(snake)
         clock.tick(SPEED)
