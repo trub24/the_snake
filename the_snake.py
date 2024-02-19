@@ -56,9 +56,9 @@ def handle_keys(game_object):
 class GameObject:
     """Родительский класс всех объектов игры."""
 
-    def __init__(self, position, body_color):
-        self.position = position
-        self.body_color = body_color
+    def __init__(self):
+        self.position = ((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
+        self.body_color = (0, 0, 0)
 
     def draw(self, surface, body_color, rect):
         """Метод родительского класса отрисовывающий 1 клетку"""
@@ -69,8 +69,10 @@ class GameObject:
 class Apple(GameObject):
     """Класс описывающий игровой объект яюлоко."""
 
-    def __init__(self, position, body_color):
-        super().__init__(position, body_color)
+    def __init__(self):
+        super().__init__()
+        self.position = self.randomize_position()
+        self.body_color = APPLE_COLOR
 
     def randomize_position(self):
         """Метод, который создает новую случайную позицию."""
@@ -89,13 +91,14 @@ class Apple(GameObject):
 class Snake(GameObject):
     """Класс описывающий игровой объект змейка."""
 
-    def __init__(self, position, body_color):
-        super().__init__(position, body_color)
+    def __init__(self):
+        super().__init__()
         self.positions = [((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))]
         self.length = 1
         self.direction = RIGHT
         self.next_direction = None
         self.last = None
+        self.body_color = SNAKE_COLOR
 
     def update_direction(self):
         """Метод - обнавляет направление движения змейки."""
@@ -171,8 +174,8 @@ class Snake(GameObject):
 
 def main():
     """Функция, в кторой прописана логика игры."""
-    apple = Apple(Apple.randomize_position(Apple), APPLE_COLOR)
-    snake = Snake(((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2)), SNAKE_COLOR)
+    apple = Apple()
+    snake = Snake()
 
     while True:
         handle_keys(snake)
